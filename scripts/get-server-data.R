@@ -1,7 +1,9 @@
 #------------------------------------------------------------------------------*
 # Get necessary data from server
 #------------------------------------------------------------------------------*
-# 
+# Get data used in the analyses from the VICo sql-server
+# A snapshot of the data is saved for convenience, but it should be removed
+# before preparing the draft tables and report to share with the collaboration.
 #------------------------------------------------------------------------------*
 
 
