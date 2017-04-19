@@ -161,8 +161,93 @@ if(!file.exists(snapshot_file)){
 # Pre process data ----
 #------------------------------------------------------------------------------*
 
+#------------------------------------------------------------------------------*
 # Standardize variable names
-
+#------------------------------------------------------------------------------*
+# Conventions:
+#   obs: observed / measured by the surveillance nurse
+# chart: read from the chart
+#  hist: reported by interviewee
+#------------------------------------------------------------------------------*
+all_respi <- all_respi %>%
+  select(
+    site_name = SiteName, site_type = SiteType,
+    site_department = SiteDepartamento,
+    year = epiYearAdmision, week = epiWeekAdmision,
+    record_id = SubjectID, record_date = PDAInsertDate,
+    case_id = SASubjectID, case_date = fechaHoraAdmision,
+    case_department = NombreDepartamento, case_municipality = NombreMunicipio,
+    case_in_catchment = catchment,
+    hospitalized = actualAdmitido,
+    eligible = elegibleRespira, enrolled = pacienteInscritoVico,
+    age_years = edadAnios, age_months = edadMeses, age_days = edadDias,
+    birth_date = fechaDeNacimiento,
+    # Symptoms
+    cough = sintomasRespiraTos,
+    difficulty_breathing = sintomasRespiraDificultadRespirar,
+    respiratory_rate_chart = respiraPorMinutoPrimaras24Horas,
+    respiratory_rate_obs = respiraPorMinuto,
+    chest_wall_indrawing_chart = respiraExamenFisicoMedicoTirajePecho,
+    chest_wall_indrawing_obs = sintomasRespiraNinioCostillasHundidas,
+    hypoxemia_obs = hipoxemia,
+    blood_oxigen_sat = oximetroPulso,
+    blood_oxigen_no_supp = OximetroPulsoSinOxi,
+    # Danger signs
+    cyanosis_obs = ninioCianosisObs,
+    difficulty_feeding = ninioBeberMamar,
+    vomits_everything = ninioVomitaTodo,
+    convulsions_hist = ninioTuvoConvulsiones,
+    convulsions_obs = ninioTuvoConvulsionesObs,
+    lethargy = ninioTieneLetargiaObs,
+    unconciousness = ninioDesmayoObs,
+    head_nodding = ninioCabeceoObs,
+    # Proxies for severe disease
+    ventilation = ventilacionMecanica,
+    ventilation_days = ventilacionMecanicaDias,
+    icu = cuidadoIntensivo,
+    icu_days = cuidadoIntensivoDias,
+    # Chronic illnesses
+    ci_any = enfermedadesCronicasAlguna,
+    ci_diabetes = enfermedadesCronicasDiabetes,
+    ci_cancer = enfermedadesCronicasCancer,
+    ci_cvd = enfermedadesCronicasEnfermCorazon,
+    ci_stroke = enfermedadesCronicasDerrame,
+    ci_liver = enfermedadesCronicasEnfermHigado,
+    ci_kidney = enfermedadesCronicasEnfermRinion,
+    ci_lungs = enfermedadesCronicasEnfermPulmones,
+    ci_asthma = enfermedadesCronicasAsma,
+    ci_hiv = enfermedadesCronicasVIHSIDA,
+    ci_hypertension = enfermedadesCronicasHipertension,
+    ci_preterm = enfermedadesCronicasNacimientoPrematuro,
+    ci_other = enfermedadesCronicasInfoAdicional,
+    # Death
+    death_hospital = muerteHospital,
+    death_enrolled = muerteViCo,
+    death_eligible = muerteSospechoso,
+    death_quest_stage = muerteCualPaso,
+    discharge_type = egresoTipo, # 4 means death
+    discharge_condition = egresoCondicion, # 4 means moribund
+    # Follow up after discharge
+    followup_date = seguimientoFechaReporte,
+    followup_condition = seguimientoPacienteCondicion, # 3 means death
+    # Physician diagnoses
+    diag_1 = egresoDiagnostico1,
+    diag_1_other = egresoDiagnostico1_esp,
+    diag_2 = egresoDiagnostico2,
+    diag_2_other = egresoDiagnostico2_esp,
+    # Lab results
+    pcr = viralPCR_Hizo,
+    flu_a = viralPCR_FluA,
+    flu_a_h1 = viralPCR_FluAH1,
+    flu_a_h3 = viralPCR_FluAH3,
+    flu_a_h5a = viralPCR_FluAH5a,
+    flu_a_h5b = viralPCR_FluAH5b,
+    flu_a_swa = viralPCR_FluASwA,
+    flu_a_swh1 = viralPCR_FluASwH1,
+    flu_a_pdmh1 = viralPCR_pdmH1,
+    flu_a_pdminfa = viralPCR_pdmInFA,
+    flu_b = viralPCR_FluB
+  )
 
 # Filter data to keep only necessary cases
 
