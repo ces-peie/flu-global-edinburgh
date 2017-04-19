@@ -43,20 +43,18 @@ if(!file.exists(snapshot_file)){
     "SubjectID", "SASubjectID",
     # Case metadata
     "PDAInsertDate", "fechaHoraAdmision", "epiYearAdmision", "epiWeekAdmision",
-    "SiteName", "SiteType",
+    "SiteName", "SiteType", "SiteDepartamento",
     "NombreDepartamento", "NombreMunicipio", "catchment",
-    "departamento", "municipio",
-    "actualAdmitido", "seguimientoAdmitidoHospital",
-    "elegibleRespira", "pacienteInscritoVico",
+    "actualAdmitido", "elegibleRespira", "pacienteInscritoVico",
     # Patient information
     "edadAnios", "edadMeses", "edadDias", "fechaDeNacimiento",
     # Case definition -- cough
-    "sintomasRespiraTos", "sintomasRespiraTosDias",
+    "sintomasRespiraTos",
     # Case definition -- difficulty breathing
-    "sintomasRespiraDificultadRespirar", "sintomasRespiraDificultadDias",
+    "sintomasRespiraDificultadRespirar",
     # Case definition -- respiratory rate
-    "medidaRespiraPorMinutoPrimeras24Horas", "respiraPorMinutoPrimaras24Horas", 
-    "medidaRespiraPorMinuto", "respiraPorMinuto",
+    "respiraPorMinutoPrimaras24Horas", 
+    "respiraPorMinuto",
     # Case definition -- physician diagnosis
     "egresoDiagnostico1",  "egresoDiagnostico1_esp",
     "egresoDiagnostico2", "egresoDiagnostico2_esp",
@@ -64,7 +62,7 @@ if(!file.exists(snapshot_file)){
     "sintomasRespiraNinioCostillasHundidas",
     "respiraExamenFisicoMedicoTirajePecho",
     # Case definition -- danger signs -- cyanosis
-    "historiaCianosis", "ninioCianosisObs",
+    "ninioCianosisObs",
     # Case definition -- danger signs -- difficulty in breastfeeding or drinking
     "ninioBeberMamar",
     # Case definition -- danger signs -- vomiting everything
@@ -78,17 +76,13 @@ if(!file.exists(snapshot_file)){
     # Case definition -- danger signs -- head nodding
     "ninioCabeceoObs",
     # Proxies for severe disease -- ICU
-    "cuidadoIntensivoDias",
+    "cuidadoIntensivo", "cuidadoIntensivoDias",
     # Proxies for severe disease -- oximetry
-    "medirOximetroPulso", 
-    "oximetroPulso", "oximetroPulso_Lag", "oxiAmb",
-    "oximetroPulsoFechaHoraToma_Esti",  "medirOximetroPulsoSinOxi",
-    "oxigenoSuplementario", "oxigenoSuplementarioCuanto", 
-    "oximetroPulsoNoRazon", "oximetroPulsoNoRazon_esp",
-    "oximetroPulsoSinOxiNoRazon",  "oximetroPulsoSinOxiNoRazon_esp",
+    "oximetroPulso",
+    "oxigenoSuplementario",
     "OximetroPulsoSinOxi", "hipoxemia",
     # Proxies for severe disease -- mechanical ventilation
-    "ventilacionMecanicaCuanto", "ventilacionMecanicaDias", "ventilacionMecanica",
+    "ventilacionMecanica", "ventilacionMecanicaDias",
     # Comorbidities
     "enfermedadesCronicasAlguna",
     "enfermedadesCronicasAsma", "enfermedadesCronicasDiabetes",
@@ -96,12 +90,13 @@ if(!file.exists(snapshot_file)){
     "enfermedadesCronicasDerrame", "enfermedadesCronicasEnfermHigado",
     "enfermedadesCronicasEnfermRinion", "enfermedadesCronicasEnfermPulmones",
     "enfermedadesCronicasVIHSIDA", "enfermedadesCronicasHipertension",
-    "enfermedadesCronicasOtras", "enfermedadesCronicasNacimientoPrematuro",
+    "enfermedadesCronicasNacimientoPrematuro",
+    "enfermedadesCronicasInfoAdicional",
     # Death
-    "muerteViCo", "muerteViCoFecha", "muerteSospechoso",
-    "muerteSospechosoFecha",  "muerteHospital", "muerteCualPaso",
-    "egresoMuerteFecha", "egresoTipo", "egresoCondicion",
-    "seguimientoPacienteMuerteFecha",
+    "muerteViCo", "muerteSospechoso",
+    "muerteHospital", "muerteCualPaso",
+    "egresoTipo", "egresoCondicion",
+    "seguimientoFechaReporte", "seguimientoPacienteCondicion",
     # Lab information
     "viralPCR_Hizo", "viralPCR_FluA", "viralPCR_FluB",
     "viralPCR_FluAH1", "viralPCR_FluAH3",
