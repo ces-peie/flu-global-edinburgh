@@ -248,6 +248,14 @@ all_respi <- all_respi %>%
     flu_b = viralPCR_FluB
   )
 
+all_sites <- all_sites %>%
+  select(
+    site_type  = TipoSitio, site_name = NombreShortName, site_name_full = Nombre,
+    site_department = DeptoShortName,
+    long = Longitude, lat = Latitude, altitude = Altitude
+  )
+
+
 # Filter data to keep only necessary cases
 
 
