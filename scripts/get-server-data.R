@@ -146,11 +146,32 @@ if(!file.exists(snapshot_file)){
   all_sites <- as_tibble(all_sites)
   
   
+  # Get catchment areas
+  catchment <- dbGetQuery(
+    conn = data_base,
+    statement = paste(
+      "SELECT",
+      paste(
+        "DepartamentoNombre AS department",
+        "MunicipioNombre AS municipality",
+        "CASE HUSarea WHEN 1 THEN 1 WHEN 2 THEN 0 END AS catchment",
+        sep = ", "
+      ),
+      "FROM INE.Censo2002.Poblacion",
+      "WHERE DepartamentoID IN (6, 9)",
+      "GROUP BY DepartamentoNombre, DepartamentoID, MunicipioNombre, MunicipioID, HUSarea",
+      "ORDER BY DepartamentoID, MunicipioID"
+    )
+  )
+  
+  catchment <- as_tibble(catchment)
+  
+  
   # Disconnect from server
   dbDisconnect(data_base)
   
   # Save snapshot
-  save(all_respi, all_sites, file = snapshot_file)
+  save(all_respi, all_sites, catchment, file = snapshot_file)
 } else {
   # Load available snapshot 
   load(file = snapshot_file)
