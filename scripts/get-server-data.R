@@ -76,7 +76,7 @@ if(!file.exists(snapshot_file)){
     # Case definition -- danger signs -- head nodding
     "ninioCabeceoObs",
     # Proxies for severe disease -- ICU
-    "cuidadoIntensivo", "cuidadoIntensivoDias",
+    "cuidadoIntensivoDias",
     # Proxies for severe disease -- oximetry
     "oximetroPulso",
     "oxigenoSuplementario",
@@ -204,7 +204,6 @@ all_respi <- all_respi %>%
     # Proxies for severe disease
     ventilation = ventilacionMecanica,
     ventilation_days = ventilacionMecanicaDias,
-    icu = cuidadoIntensivo,
     icu_days = cuidadoIntensivoDias,
     # Chronic illnesses
     ci_any = enfermedadesCronicasAlguna,
