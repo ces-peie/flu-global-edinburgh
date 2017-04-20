@@ -27,7 +27,8 @@ study_sites <- c("H-Cuilapa", "H-Xela")
 #------------------------------------------------------------------------------*
 
 # Define dataset metadata (snapshot file name, period, sites, etc.)
-snapshot_file <- "data/snapshots/vico-server.RData"
+snapshots_path <- "data/snapshots/"
+snapshot_file <- paste0(snapshots_path, "vico-server.RData")
 
 
 # Check if a snapshot is available, otherwise get from server
@@ -309,6 +310,10 @@ study_sites <- all_sites %>%
 # Save pre processed data ----
 #------------------------------------------------------------------------------*
 
+save(
+  study_respi, study_sites, catchment,
+  file = paste0(snapshots_path, "study_data.RData")
+)
 
 
 
