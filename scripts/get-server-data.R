@@ -14,7 +14,12 @@
 #------------------------------------------------------------------------------*
 
 # Load used packages
+library(package = "lubridate")
 library(package = "tidyverse")
+
+# Define study metadata
+study_years <- 2010:2015
+study_sites <- c("H-Cuilapa", "H-Xela")
 
 
 #------------------------------------------------------------------------------*
@@ -277,7 +282,26 @@ all_sites <- all_sites %>%
   )
 
 
-# Filter data to keep only necessary cases
+#-------------------------------------------------------------------------------*
+# Filter data to keep only necessary cases ----
+#-------------------------------------------------------------------------------*
+
+# Surveillance data
+study_respi <- all_respi %>%
+  mutate(
+    record_year = year(record_date)
+  ) %>%
+  filter(
+    record_year %in% study_years,
+    site_name %in% study_sites
+  )
+
+# Sites metadata
+study_sites <- all_sites %>%
+  filter(
+    site_name %in% study_sites
+  )
+
 
 
 
