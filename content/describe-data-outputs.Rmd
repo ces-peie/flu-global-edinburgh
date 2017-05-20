@@ -29,3 +29,97 @@ source(file = "scripts/get-server-data.R")
 source(file = "scripts/get-population-data.R")
 ```
 
+
+```{r clean-data}
+# Catchment
+catchment <- catchment %>%
+  # Fix casing
+  mutate_at(
+    vars(department, municipality),
+    funs(
+      gsub(
+        "(^| )([a-z])", "\\1\\U\\2",
+        tolower(iconv(., to = "ASCII//TRANSLIT")),
+        perl = TRUE
+      )
+    )
+  ) %>%
+  # Fix typos
+  mutate(
+    municipality = recode(
+      municipality,
+      "Santa Cruz Naranajo" = "Santa Cruz Naranjo",
+      "Concepcion Chiquirichap" = "Concepcion Chiquirichapa",
+      "San Martin Sacatepeque" = "San Martin Sacatepequez"
+    )
+  )
+
+
+# Surveillance data
+all_respi <- all_respi %>%
+  # Fix casing
+  mutate_at(
+    vars(case_department, case_municipality),
+    funs(
+      gsub(
+        "(^| )([a-z])", "\\1\\U\\2",
+        tolower(iconv(., to = "ASCII//TRANSLIT")),
+        perl = TRUE
+      )
+    )
+  ) %>%
+  # Label variables
+  mutate(
+    # Site department
+    site_department = recode(
+      site_department,
+      "QU" = "Quetzaltenango",
+      "SR" = "Santa Rosa"
+    ),
+    # Location for population
+    site_location = recode(
+      site_name,
+      "H-Cuilapa" = "Santa Rosa",
+      "H-Xela" = "Quetzaltenango",
+      "CS-NSR" = "Nueva Santa Rosa"
+    ),
+    # Label age groups
+    age_group = case_when(
+      age_years == 0 & age_months == 0 & age_days < 28 ~ "0-27 days",
+      age_years == 0 & age_months < 3 ~ "28 days-<3 month",
+      age_years == 0 & age_months < 6 ~ "3-5 months",
+      age_years == 0 & age_months < 9 ~ "6-8 months",
+      age_years == 0 & age_months < 12 ~ "9-11 months",
+      (age_years == 0 & age_months == 12) |
+        between(age_years, 1, 1) ~ "12-23 months",
+      between(age_years, 2, 2) ~ "24-35 months",
+      between(age_years, 3, 4) ~ "36-59 months",
+      TRUE ~ NA_character_
+    ),
+    age_group = factor(age_group, levels = labels_age_groups, ordered = TRUE)
+  ) %>%
+  # Only keep cases under 5 yoa
+  filter(
+    !is.na(age_group),             # Defined age groups
+    year %in% study_years          # During the study period
+  )
+
+
+# Population data
+catchment_population <- population %>%
+  # Tag as catchment area
+  left_join(catchment) %>%
+  filter(catchment == 1) %>%
+  # Tag locations for hospitals
+  mutate(location = department) %>%
+  # Tag locations for NSR
+  bind_rows(
+    mutate(
+      filter(., municipality == "Nueva Santa Rosa"),
+      location = municipality
+    )
+  ) %>%
+  # Summarize population for each location, year and age group
+  group_by(location, age_group, year) %>%
+  summarize(population = sum(population)) %>%
+  ungroup()
