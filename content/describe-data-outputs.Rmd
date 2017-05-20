@@ -12,7 +12,7 @@ library(package = "tidyverse")
 
 
 # Define study metadata
-study_years <- 2010:2015
+study_years <- 2010:2016
 study_sites <- c("H-Cuilapa", "H-Xela")
 
 
@@ -28,6 +28,7 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 source(file = "scripts/get-server-data.R")
 source(file = "scripts/get-population-data.R")
 ```
+
 
 
 ```{r clean-data}

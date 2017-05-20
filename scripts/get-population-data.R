@@ -24,7 +24,7 @@
 
 # Define file parameters
 base_uri <- "https://github.com/odeleongt/gt-population/releases/download"
-current_tag <- "v0.1.0"
+current_tag <- "v0.2.0"
 snapshot_file <- "flu_edinburgh_population.csv"
 
 # Read file directly from online repository
