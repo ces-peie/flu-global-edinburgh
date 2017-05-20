@@ -1,0 +1,31 @@
+---
+title: "Flu-Edinburgh colaboration"
+author: "Oscar de León"
+date: "May 20, 2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+# Load used packages
+library(package = "lubridate")
+library(package = "tidyverse")
+
+
+# Define study metadata
+study_years <- 2010:2015
+study_sites <- c("H-Cuilapa", "H-Xela")
+
+
+# Setup knitting
+knitr::opts_knit$set(root.dir = "..")
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+```
+
+
+
+```{r load-data}
+# Run data preparation scripts
+source(file = "scripts/get-server-data.R")
+source(file = "scripts/get-population-data.R")
+```
+
