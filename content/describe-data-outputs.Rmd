@@ -152,9 +152,17 @@ presents <- function(var){
 # Definitions stated when testing each row
 #------------------------------------------------------------------------------*
 alri_cases <- study_respi %>%
+  # Tag records with altitude
+  left_join(
+    rename(
+      catchment, site_department = department, case_municipality = municipality
+    )
+  ) %>%
   filter(
     # Only records from hospitals
-    site_type == "H"
+    site_type == "H",
+    # Only records from catchment areas
+    catchment == 1
   ) %>%
   # Tag records with altitude
   left_join(
