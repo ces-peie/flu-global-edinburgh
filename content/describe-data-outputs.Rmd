@@ -197,6 +197,15 @@ alri_cases <- study_respi %>%
       # Otherwise no tachypnea
       TRUE ~ 0
     ),
+    # Danger signs
+    # (cyanosis, difficulty in breastfeeding or drinking, vomiting everything,
+    # convulsions, lethargy, or unconsciousness, head nodding)
+    danger_signs = presents(
+      presents(cyanosis_obs) | presents(difficulty_feeding) |
+      presents(vomits_everything) |
+      presents(convulsions_hist) | presents(convulsions_obs) |
+      presents(lethargy) | presents(unconciousness) | presents(head_nodding)
+    ),
     # ALRI cases
     alri = presents(
       (presents(cough) | presents(difficulty_breathing)) & presents(tachypnea)
