@@ -213,6 +213,26 @@ alri_cases <- study_respi %>%
     # ALRI cases
     alri = presents(
       (presents(cough) | presents(difficulty_breathing)) & presents(tachypnea)
+    ),
+    case_type = case_when(
+      # Hospitalised Influenza associated very severe ALRI (passive hospital
+      # based case ascertainment): hospitalised ALRI with one danger sign OR
+      # proxies for very severe disease
+      presents(alri) & presents(hospitalized) &
+        (presents(danger_signs) | presents(severe_disease_proxies)) == 1 ~
+        "hospitalized very severe alri",
+      # Hospitalised influenza-associated severe ALRI (passive hospital based
+      # case ascertainment): Hospitalised ALRI cases with hypoxemia (as defined
+      # below) and laboratory confirmed influenza
+      presents(alri) & presents(hospitalized) &
+        presents(hypoxemia) == 1 ~ "hospitalized severe alri",
+      # Hospitalised influenza associated ALRI (passive hospital based case
+      # ascertainment)  all children with physician confirmed diagnosis of ALRI
+      # (pneumonia or bronchiolitis) that are hospitalised or recommended
+      # hospitalisation and laboratory confirmed influenza
+      presents(alri) & presents(hospitalized) ~ "hospitalized alri",
+      # Otherwise only alri
+      TRUE ~ if_else(condition = alri == 1, true = "alri", false = "not alri")
     )
   )
 ```
