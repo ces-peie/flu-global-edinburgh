@@ -206,6 +206,10 @@ alri_cases <- study_respi %>%
       presents(convulsions_hist) | presents(convulsions_obs) |
       presents(lethargy) | presents(unconciousness) | presents(head_nodding)
     ),
+    # Proxies of very severe disease (mechanical ventilation OR ICU admission)
+    severe_disease_proxies = presents(
+      presents(ventilation) | presents(icu_days > 0)
+    ),
     # ALRI cases
     alri = presents(
       (presents(cough) | presents(difficulty_breathing)) & presents(tachypnea)
