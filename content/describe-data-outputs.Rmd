@@ -57,7 +57,7 @@ catchment <- catchment %>%
 
 
 # Surveillance data
-all_respi <- all_respi %>%
+study_respi <- study_respi %>%
   # Fix casing
   mutate_at(
     vars(case_department, case_municipality),
