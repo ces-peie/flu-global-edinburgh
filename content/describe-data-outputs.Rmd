@@ -175,6 +175,19 @@ alri_cases <- study_respi %>%
         blood_oxigen_sat < 85 ~ 1,
       # Otherwise no hypoxemia
       TRUE ~ 0
+    ),
+    # Use highest recorded respiratory rate
+    respiratory_rate = pmax(
+      respiratory_rate_chart, respiratory_rate_obs, na.rm = TRUE
+    ),
+    # Define tachypnea
+    tachypnea = case_when(
+      age_years == 0 & age_months < 2 & respiratory_rate >= 60 ~ 1,
+      age_years = 0 & age_months >= 2 & respiratory_rate >= 50 ~ 1,
+      (age_years >= 1 | (age_years == 0 & age_months == 12)) &
+        respiratory_rate >= 40 ~ 1,
+      # Otherwise no tachypnea
+      TRUE ~ 0
     )
   )
 ```
