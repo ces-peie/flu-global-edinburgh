@@ -124,3 +124,57 @@ catchment_population <- population %>%
   group_by(location, age_group, year) %>%
   summarize(population = sum(population)) %>%
   ungroup()
+```
+
+
+
+```{r assign-case-definitions}
+#------------------------------------------------------------------------------*
+# Study sites considered pasive hospital based
+#------------------------------------------------------------------------------*
+# Definitions stated when testing each row
+#------------------------------------------------------------------------------*
+
+alri_cases <- study_respi %>%
+  filter(
+    # Only hospitalized cases
+    site_type == "H"
+  ) %>%
+  # Tag cases with altitude
+  left_join(
+    select(all_sites, site_name, altitude)
+  ) %>%
+  mutate(
+    # Use oxygen saturation without oxygen supplementation if available
+    blood_oxigen_sat = if_else(
+      condition = !is.na(blood_oxigen_no_supp) &
+        # Remove outliers
+        blood_oxigen_no_supp > 30,
+      true = blood_oxigen_no_supp,
+      false = blood_oxigen_sat
+    ),
+    # Hypoxemia
+    hypoxemia = case_when(
+      # SpO2 <90% (at altitude ≤2500 m) in children aged 1-59 months
+      altitude <= 2500 &
+        age_years < 5 &
+        (age_months >= 1 | is.na(age_months) | age_days >= 28) &
+        blood_oxigen_sat < 90 ~ 1,
+      # <88% for neonates (at sea level)
+      altitude <= 2500 &
+        age_years == 0 & age_months == 0 & age_days <= 27 &
+        blood_oxigen_sat < 88 ~ 1,
+      # At altitude above 2500m, SpO2 <87% in children aged 1-59 months
+      altitude > 2500 &
+        age_years < 5 &
+        (age_months >= 1 | is.na(age_months) | age_days >= 28) &
+        blood_oxigen_sat < 87 ~ 1,
+      # and <85% for neonates would classify as hypoxemia.
+      altitude <= 2500 &
+        age_years == 0 & age_months == 0 & age_days <= 27 &
+        blood_oxigen_sat < 85 ~ 1,
+      # Otherwise no hypoxemia
+      TRUE ~ 0
+    )
+  )
+```
