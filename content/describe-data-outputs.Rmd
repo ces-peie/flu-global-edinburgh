@@ -145,10 +145,10 @@ presents <- function(var){
 #------------------------------------------------------------------------------*
 alri_cases <- study_respi %>%
   filter(
-    # Only hospitalized cases
+    # Only records from hospitals
     site_type == "H"
   ) %>%
-  # Tag cases with altitude
+  # Tag records with altitude
   left_join(
     select(all_sites, site_name, altitude)
   ) %>%
