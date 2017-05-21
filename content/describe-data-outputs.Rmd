@@ -129,12 +129,20 @@ catchment_population <- population %>%
 
 
 ```{r assign-case-definitions}
+# Function to check symptoms
+presents <- function(var){
+  if_else(
+    condition = var == 1 & !is.na(var),
+    true = 1,
+    false = 0
+  )
+}
+
 #------------------------------------------------------------------------------*
 # Study sites considered pasive hospital based
 #------------------------------------------------------------------------------*
 # Definitions stated when testing each row
 #------------------------------------------------------------------------------*
-
 alri_cases <- study_respi %>%
   filter(
     # Only hospitalized cases
@@ -188,6 +196,10 @@ alri_cases <- study_respi %>%
         respiratory_rate >= 40 ~ 1,
       # Otherwise no tachypnea
       TRUE ~ 0
+    ),
+    # ALRI cases
+    alri = presents(
+      (presents(cough) | presents(difficulty_breathing)) & presents(tachypnea)
     )
   )
 ```
