@@ -84,6 +84,14 @@ study_respi <- study_respi %>%
       "H-Xela" = "Quetzaltenango",
       "CS-NSR" = "Nueva Santa Rosa"
     ),
+    # Fix catchment municipalities
+    case_municipality = recode(
+      case_municipality,
+      "Colomba Costa Cuca" = "Colomba",
+      "Ostuncalco" = "San Juan Ostuncalco",
+      "San Miguel Signila" = "San Miguel Siguila",
+      .default = case_municipality
+    ),
     # Label age groups
     age_group = case_when(
       age_years == 0 & age_months == 0 & age_days < 28 ~ "0-27 days",
