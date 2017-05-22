@@ -141,8 +141,17 @@ catchment_population <- population %>%
 presents <- function(var){
   if_else(
     condition = var == 1 & !is.na(var),
-    true = 1,
-    false = 0
+    true = 1L,
+    false = 0L
+  )
+}
+
+# Function to check lab results
+result <- function(var){
+  if_else(
+    condition = var %in% c(0, 1),
+    true = presents(var),
+    false = NA_integer_
   )
 }
 
@@ -249,6 +258,22 @@ alri_cases <- study_respi %>%
       presents(alri) & presents(hospitalized) ~ "hospitalized alri",
       # Otherwise only alri
       TRUE ~ if_else(condition = alri == 1, true = "alri", false = "not alri")
-    )
+    ),
+    # Influenza laboratory results
+    flu_a_h1 = result(flu_a_h1),
+    flu_a_h1_09pdm = result(if_else(is.na(flu_a_swa), flu_a_pdmh1, flu_a_swh1)),
+    flu_a_h3 = result(flu_a_h3),
+    flu_a = if_else(
+      condition = !is.na(flu_a_h1) | !is.na(flu_a_h3) | !is.na(flu_a_h1_09pdm),
+      true = 1L,
+      false = if_else(
+        condition = !is.na(flu_a),
+        true = 0L,
+        false = NA_integer_
+      )
+    ),
+    flu_b = result(flu_b & !flu_a),
+    flu_any = presents(flu_a | flu_b),
+    not_tested = presents(is.na(flu_a))
   )
 ```
