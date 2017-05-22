@@ -33,7 +33,12 @@ population <- read_csv(
 )
 
 # Extract age groups from ddata
-labels_age_groups <- population %>% pull(age_group) %>% unique
+labels_age_groups <- c(
+  "0-27 days", "28 days-<3 month", "3-5 months", "6-8 months", "9-11 months",
+  "0-11 months",
+  "12-23 months", "24-35 months", "36-59 months",
+  "12-59 months", "24-59 months", "0-59 months"
+)
 
 
 
