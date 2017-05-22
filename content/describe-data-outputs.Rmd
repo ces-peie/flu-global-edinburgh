@@ -370,7 +370,7 @@ alri_all_groups <- alri_minimal %>%
 #------------------------------------------------------------------------------*
 # Summarize cases by site, year, case type, flu type/subtype and age
 #------------------------------------------------------------------------------*
-alri_all_groups %>%
+alri_summarized <- alri_all_groups %>%
   mutate(
     not_tested = paste0(
       not_tested, " of ", n,
@@ -419,7 +419,11 @@ alri_all_groups %>%
       ordered = TRUE
     )
   ) %>%
-  arrange(column) %>%
+  arrange(column)
+
+
+# Write wide output
+alri_summarized %>%
   select(-case_type, -age_group, -assay) %>%
   spread(key = column, value = cases, fill = 0) %>%
   write_csv(path = "output/hosp_alri.csv")
