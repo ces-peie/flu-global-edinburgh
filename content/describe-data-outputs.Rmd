@@ -107,6 +107,12 @@ study_respi <- study_respi %>%
     ),
     age_group = factor(age_group, levels = labels_age_groups, ordered = TRUE)
   ) %>%
+  # Label respiratory indications
+  left_join(
+    select(
+      labels_respi, respiratory_indications = value, respiratory_indication_label = text
+    )
+  ) %>%
   # Only keep cases under 5 yoa
   filter(
     !is.na(age_group),             # Defined age groups
@@ -237,7 +243,21 @@ alri_cases <- study_respi %>%
     ),
     # ALRI cases
     alri = presents(
-      (presents(cough) | presents(difficulty_breathing)) & presents(tachypnea)
+      presents(
+        (presents(cough) | presents(difficulty_breathing)) & presents(tachypnea)
+      ) |
+      presents(
+        presents(
+          presents(
+            respiratory_indication_label %in% c(
+              "NAC- Neumonía adquirida comunitaria",
+              "Bronconeumonía",
+              "Bronquiolitos",
+              "Neumonía - NM"
+            )
+          )
+        )
+      )
     ),
     case_type = case_when(
       # Hospitalised Influenza associated very severe ALRI (passive hospital
@@ -298,7 +318,9 @@ label_lab_results <- tribble(
 alri_minimal <- alri_cases %>%
   filter(
     # Only keep alri cases
-    alri == 1
+    alri == 1,
+    # Only keep hospitalized cases
+    hospitalized == 1
   ) %>%
   group_by(site_name, year) %>%
   mutate(
