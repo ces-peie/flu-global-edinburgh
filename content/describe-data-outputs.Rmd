@@ -288,3 +288,140 @@ label_lab_results <- tribble(
   "flu_any", "All influenza (subtyped and unsubtyped)"
 )
 ```
+
+
+
+```{r count-cases}
+#------------------------------------------------------------------------------*
+# Collect minimal variables for the ALRI case count
+#------------------------------------------------------------------------------*
+alri_minimal <- alri_cases %>%
+  filter(
+    # Only keep alri cases
+    alri == 1
+  ) %>%
+  group_by(site_name, year) %>%
+  mutate(
+    n = n(),
+    not_tested = sum(not_tested)
+  ) %>%
+  ungroup() %>%
+  select(
+    site_name, year, n, not_tested, case_type, age_group,
+    flu_a_h1, flu_a_h1_09pdm, flu_a_h3, flu_a, flu_b, flu_any
+  )
+
+
+#------------------------------------------------------------------------------*
+# Complete age groups and all combinations of data levels
+#------------------------------------------------------------------------------*
+alri_all_groups <- alri_minimal %>%
+  # Add summary age groups
+  bind_rows(
+    # 0-11 months
+    mutate(
+      filter(., age_group < c("0-11 months")),
+      age_group = factor(
+        "0-11 months",
+        levels = levels(age_group)
+      )
+    ),
+    # 0-59 months
+    mutate(
+      filter(., age_group < c("0-59 months")),
+      age_group = factor(
+        "0-59 months",
+        levels = levels(age_group)
+      )
+    ),
+    # 12-59 months
+    mutate(
+      filter(., age_group > c("0-11 months")),
+      age_group = factor(
+        "12-59 months",
+        levels = levels(age_group)
+      )
+    ),
+    # 24-59 months
+    mutate(
+      filter(., age_group > c("12-23 months")),
+      age_group = factor(
+        "24-59 months",
+        levels = levels(age_group)
+      )
+    )
+  ) %>%
+  gather(
+    key = assay, value = result,
+    flu_a_h1, flu_a_h1_09pdm, flu_a_h3, flu_a, flu_b, flu_any
+  ) %>%
+  # Complete all combinations
+  right_join(
+    expand(., site_name, year, case_type, age_group, assay)
+  ) %>%
+  group_by(site_name, year) %>%
+  mutate(
+    n = first(na.omit(n)),
+    not_tested = first(na.omit(not_tested))
+  ) %>%
+  ungroup()
+
+
+#------------------------------------------------------------------------------*
+# Summarize cases by site, year, case type, flu type/subtype and age
+#------------------------------------------------------------------------------*
+alri_all_groups %>%
+  mutate(
+    not_tested = paste0(
+      not_tested, " of ", n,
+      " (", scales::percent(not_tested / n), ")"
+    )
+  ) %>%
+  group_by(site_name, year, not_tested, case_type, age_group, assay) %>%
+  summarize(
+    cases = sum(result, na.rm = TRUE)
+  ) %>%
+  ungroup() %>%
+  mutate(
+    text = "",
+    # order results
+    case_type = factor(
+      case_type,
+      levels = c(
+        "hospitalized alri",
+        "hospitalized severe alri",
+        "hospitalized very severe alri"
+      ),
+      ordered = TRUE
+    ),
+    assay = factor(
+      assay,
+      levels = c(
+        "flu_a_h1", "flu_a_h1_09pdm", "flu_a_h3",
+        "flu_a", "flu_b", "flu_any"
+      ),
+      ordered = TRUE
+    ),
+    column = factor(
+      paste(case_type, assay, age_group, sep = "\n"),
+      levels = paste(
+        rep(
+          paste(
+            rep(levels(case_type), each = length(levels(assay))),
+            rep(levels(assay), times = length(levels(case_type))),
+            sep = "\n"
+          ),
+          each = length(levels(age_group))
+        ),
+        levels(age_group),
+        sep = "\n"
+      ),
+      ordered = TRUE
+    )
+  ) %>%
+  arrange(column) %>%
+  select(-case_type, -age_group, -assay) %>%
+  spread(key = column, value = cases, fill = 0) %>%
+  write_csv(path = "output/hosp_alri.csv")
+```
+
