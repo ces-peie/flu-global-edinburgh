@@ -276,4 +276,15 @@ alri_cases <- study_respi %>%
     flu_any = presents(flu_a | flu_b),
     not_tested = presents(is.na(flu_a))
   )
+
+# Label lab results
+label_lab_results <- tribble(
+  ~assay, ~name,
+  "flu_a_h1", "A(H1N1)",
+  "flu_a_h1_09pdm", "A(H1N1)09pdm",
+  "flu_a_h3", "A(H3N2)",
+  "flu_a", "Influenza A (sub and unsub)",
+  "flu_b", "Influenza B",
+  "flu_any", "All influenza (subtyped and unsubtyped)"
+)
 ```
