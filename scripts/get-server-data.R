@@ -210,6 +210,9 @@ all_respi <- all_respi %>%
     age_years = edadAnios, age_months = edadMeses, age_days = edadDias,
     birth_date = fechaDeNacimiento,
     # Symptoms
+    has_respiratory_indications = presentaIndicacionRespira,
+    respiratory_indications = indicacionRespira,
+    respiratory_indications_other = indicacionRespira_otra,
     cough = sintomasRespiraTos,
     difficulty_breathing = sintomasRespiraDificultadRespirar,
     respiratory_rate_chart = respiraPorMinutoPrimaras24Horas,
