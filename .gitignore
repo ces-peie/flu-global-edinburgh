@@ -6,6 +6,7 @@ data/*
 # Output files
 *.pdf
 *.*html*
+output/
 
 # Image files
 *.png
