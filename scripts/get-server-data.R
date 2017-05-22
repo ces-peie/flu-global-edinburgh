@@ -41,6 +41,8 @@ if(!file.exists(snapshot_file)){
     "actualAdmitido", "elegibleRespira", "pacienteInscritoVico",
     # Patient information
     "edadAnios", "edadMeses", "edadDias", "fechaDeNacimiento",
+    # Case definition -- physician diagnoses
+    "presentaIndicacionRespira", "indicacionRespira", "indicacionRespira_otra",
     # Case definition -- cough
     "sintomasRespiraTos",
     # Case definition -- difficulty breathing
@@ -128,6 +130,17 @@ if(!file.exists(snapshot_file)){
   all_respi <- all_respi %>% set_names(variables) %>% as_tibble()
   
   
+  # Get respiratory indications labels
+  labels_respi <- dbGetQuery(
+    conn = data_base,
+    statement = paste(
+      "SELECT * FROM LegalValue.LV_INDICRESPIRA"
+    )
+  ) %>%
+    set_names(tolower(names(.))) %>%
+    as_tibble()
+  
+  
   
   # Get sites data from server
   all_sites <- dbGetQuery(
@@ -164,7 +177,7 @@ if(!file.exists(snapshot_file)){
   dbDisconnect(data_base)
   
   # Save snapshot
-  save(all_respi, all_sites, catchment, file = snapshot_file)
+  save(all_respi, labels_respi, all_sites, catchment, file = snapshot_file)
 } else {
   # Load available snapshot 
   load(file = snapshot_file)
