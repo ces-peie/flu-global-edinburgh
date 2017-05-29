@@ -228,6 +228,15 @@ alri_cases <- study_respi %>%
       # Otherwise no tachypnea
       TRUE ~ 0
     ),
+    # Define physician diagnosis
+    phys_diagnosis = presents(
+      respiratory_indication_label %in% c(
+        "NAC- Neumonía adquirida comunitaria",
+        "Bronconeumonía",
+        "Bronquiolitos",
+        "Neumonía - NM"
+      )
+    ),
     # Danger signs
     # (cyanosis, difficulty in breastfeeding or drinking, vomiting everything,
     # convulsions, lethargy, or unconsciousness, head nodding)
@@ -246,18 +255,7 @@ alri_cases <- study_respi %>%
       presents(
         (presents(cough) | presents(difficulty_breathing)) & presents(tachypnea)
       ) |
-      presents(
-        presents(
-          presents(
-            respiratory_indication_label %in% c(
-              "NAC- Neumonía adquirida comunitaria",
-              "Bronconeumonía",
-              "Bronquiolitos",
-              "Neumonía - NM"
-            )
-          )
-        )
-      )
+        phys_diagnosis
     ),
     # Hospitalised influenza associated ALRI (passive hospital based case
     # ascertainment)  all children with physician confirmed diagnosis of ALRI
