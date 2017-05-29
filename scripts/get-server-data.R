@@ -39,6 +39,7 @@ if(!file.exists(snapshot_file)){
     "SiteName", "SiteType", "SiteDepartamento",
     "NombreDepartamento", "NombreMunicipio", "catchment",
     "actualAdmitido", "elegibleRespira", "pacienteInscritoVico",
+    "consentimientoVerbal", "consentimientoEscrito",
     # Patient information
     "edadAnios", "edadMeses", "edadDias", "fechaDeNacimiento",
     # Case definition -- physician diagnoses
@@ -209,6 +210,9 @@ all_respi <- all_respi %>%
     eligible = elegibleRespira, enrolled = pacienteInscritoVico,
     age_years = edadAnios, age_months = edadMeses, age_days = edadDias,
     birth_date = fechaDeNacimiento,
+    # Consent
+    consent_verbal = consentimientoVerbal,
+    consent_written = consentimientoEscrito,
     # Symptoms
     has_respiratory_indications = presentaIndicacionRespira,
     respiratory_indications = indicacionRespira,
