@@ -290,7 +290,45 @@ alri_cases <- study_respi %>%
     ),
     flu_b = result(flu_b & !flu_a),
     flu_any = presents(flu_a | flu_b),
-    not_tested = presents(is.na(flu_a))
+    not_tested = presents(is.na(flu_a)),
+    #--------------------------------------------------------------------------*
+    # Reasons not tested ----
+    #--------------------------------------------------------------------------*
+    # Was tested
+    nt_tested = presents(
+      !not_tested
+    ),
+    # Refused screening questions
+    nt_refused_screening = presents(
+      presents(not_tested) &
+      !presents(consent_verbal)
+    ),
+    # Does not meet surveillance case definitions
+    nt_not_eligible = presents(
+      presents(not_tested) &
+      !presents(nt_refused_screening) &
+      !presents(eligible)
+    ),
+    # Refused participating in study
+    nt_refused_enrollment = presents(
+      presents(not_tested) &
+      !presents(nt_refused_screening | nt_not_eligible) &
+      !presents(consent_written)
+    ),
+    # Failed to collect sample
+    nt_no_sample = presents(
+      presents(not_tested) &
+      !presents(nt_refused_screening | nt_not_eligible | nt_refused_enrollment) &
+      presents(!swab_op) & presents(!swab_np)
+    ),
+    # No obvious reason for lack of results
+    nt_no_reason = presents(
+      presents(not_tested) &
+      !presents(
+        nt_refused_screening | nt_not_eligible | nt_refused_enrollment |
+        nt_no_sample
+      )
+    )
   )
 
 # Label lab results
@@ -308,6 +346,15 @@ label_lab_results <- tribble(
 
 
 ```{r count-cases}
+# Function to summarize reasons
+count_reasons <- . %>%
+    table %>%
+    as_data_frame() %>%
+    set_names("reason", "n") %>%
+    mutate(text = paste(reason, n, sep = ":")) %>%
+    pull(text) %>%
+    paste(collapse = "\n")
+
 #------------------------------------------------------------------------------*
 # Collect minimal variables for the ALRI case count
 #------------------------------------------------------------------------------*
@@ -318,14 +365,31 @@ alri_minimal <- alri_cases %>%
     # Only keep hospitalized cases
     hospitalized == 1
   ) %>%
+  # Count and define reason for not testing
+  gather(key = reason, value, starts_with("nt_")) %>%
+  filter(value == 1) %>%
+  mutate(
+    reason_label = recode_factor(
+      reason,
+      nt_no_reason = "no reason",
+      nt_no_sample = "no sample",
+      nt_not_eligible = "not eligible",
+      nt_refused_enrollment = "refused enrollment",
+      nt_refused_screening = "refused screening",
+      nt_tested = "tested",
+      .default = "error",
+      .ordered = TRUE
+    )
+  ) %>%
   group_by(site_name, year) %>%
   mutate(
     n = n(),
-    not_tested = sum(not_tested)
+    not_tested = sum(not_tested),
+    not_tested_reason = count_reasons(reason_label)
   ) %>%
   ungroup() %>%
   select(
-    site_name, year, n, not_tested, age_group,
+    site_name, year, n, not_tested, not_tested_reason, age_group,
     hosp_alri, hosp_alri_severe, hosp_alri_very_severe,
     flu_a_h1, flu_a_h1_09pdm, flu_a_h3, flu_a, flu_b, flu_any
   )
@@ -388,7 +452,8 @@ alri_all_groups <- alri_minimal %>%
   group_by(site_name, year) %>%
   mutate(
     n = first(na.omit(n)),
-    not_tested = first(na.omit(not_tested))
+    not_tested = first(na.omit(not_tested)),
+    not_tested_reason = first(na.omit(not_tested_reason))
   ) %>%
   ungroup()
 
@@ -403,13 +468,14 @@ alri_summarized <- alri_all_groups %>%
       " (", scales::percent(not_tested / n), ")"
     )
   ) %>%
-  group_by(site_name, year, not_tested, case_type, age_group, assay) %>%
+  group_by(
+    site_name, year, not_tested, not_tested_reason, case_type, age_group, assay
+  ) %>%
   summarize(
     cases = sum(result, na.rm = TRUE)
   ) %>%
   ungroup() %>%
   mutate(
-    text = "",
     # order results
     case_type = recode_factor(
       case_type,
