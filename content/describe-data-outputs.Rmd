@@ -184,6 +184,9 @@ alri_cases <- study_respi %>%
     select(all_sites, site_name, altitude)
   ) %>%
   mutate(
+    # Case dates
+    year = year(case_date),
+    month = month(case_date),
     # Use department as site name
     site_name = recode_factor(
       site_name,
@@ -335,6 +338,11 @@ alri_cases <- study_respi %>%
         nt_refused_screening | nt_not_eligible | nt_refused_enrollment |
         nt_no_sample
       )
+    ),
+    # Other data
+    comorbidities = presents(ci_any),
+    death = presents(
+      presents(death_hospital) | presents(death_enrolled) | presents(death_eligible)
     )
   )
 
@@ -525,5 +533,175 @@ alri_summarized %>%
   select(-case_type, -age_group, -assay) %>%
   spread(key = column, value = cases, fill = 0) %>%
   write_csv(path = "output/hosp_alri.csv")
+```
+
+
+
+```{r mortality-sheet}
+#------------------------------------------------------------------------------*
+# Gather mortality information from surveillance data
+#------------------------------------------------------------------------------*
+mortality <- alri_cases %>%
+  # Define characteristics (aka mortality variables, mv for short)
+  mutate(
+    # 1 Total hospitalised ALRI cases
+    mv_hosp_alri_1 = presents(
+      hosp_alri
+    ),
+    # 2 Total cases of hospitalised ALRI tested for influenza
+    mv_hosp_alri_tested_2 = presents(
+      hosp_alri & !not_tested
+    ),
+    # 3a Total cases of hospitalised ALRI positive for Influenza A(H1N1)
+    mv_hosp_alri_flu_a_h1_3a = presents(
+      hosp_alri & flu_a_h1
+    ),
+    # 3b Total cases of hospitalised ALRI positive for Influenza A(H1N1)09pdm
+    mv_hosp_alri_flu_a_h1_pdm_3b = presents(
+      hosp_alri & flu_a_h1_09pdm
+    ),
+    # 3c Total cases of hospitalised ALRI positive for Influenza A(H3N2)
+    mv_hosp_alri_flu_a_h3_3c = presents(
+      hosp_alri & flu_a_h3
+    ),
+    # 3d Total cases of hospitalised ALRI positive for Influenza B
+    mv_hosp_alri_flu_b_3d = presents(
+      hosp_alri & flu_b
+    ),
+    # 3e Total cases of hospitalised ALRI positive for all Influenza (including
+    # subtyped and unsubtyped)
+    mv_hosp_alri_flu_any_3e = presents(
+      hosp_alri & flu_any
+    ),
+    # 4a Number of influenza positive ALRI cases where SpO2 was recorded
+    mv_alri_flu_oxymetry_4a = presents(
+      hosp_alri & flu_any & !is.na(blood_oxigen_sat)
+    ),
+    # 4b Number of influenza positive ALRI cases with hypoxemia (SpO2<90% for
+    # 1-59 months and 88% for neonates at altitude<=2500 m; and <87% and 85%
+    # for post-neonatal age groups and neonates at altitude above 2500 m)
+    mv_alri_flu_hypoxemia_4b = presents(
+      hosp_alri & flu_any & hypoxemia
+    ),
+    # 5 Number of influenza positive ALRI cases requiring admission into
+    # Intensive Care Units
+    mv_alri_flu_icu_5 = presents(
+      hosp_alri & flu_any & presents(icu_days > 0)
+    ),
+    # 6 Number of influenza positive ALRI cases requiring mechanical ventilation
+    mv_alri_flu_ventilation_6 = presents(
+      hosp_alri & flu_any & presents(ventilation)
+    ),
+    # 7 No. of influenza positive ALRI cases with co-morbidities (congenital
+    # heart disease, renal disease, cancer, on immunosuppresants, chronic lung
+    # disease etc.)
+    mv_alri_flu_comorb_7 = presents(
+      hosp_alri & flu_any & comorbidities
+    ),
+    # 8a Number of ALRI deaths in hospital
+    mv_alri_deaths_8a = presents(
+      hosp_alri & death
+    ),
+    # 8b Number of ALRI cases tested for Flu and who died in-hospital 
+    mv_alri_tested_deaths_8b = presents(
+      hosp_alri & death & !not_tested
+    ),
+    # 8c Number of ALRI cases NOT tested for Flu and who died in-hospital 
+    mv_alri_nontested_deaths_8c = presents(
+      hosp_alri & death & not_tested
+    ),
+    # 8d No. of in-hospital deaths in influenza A(H1N1) positive ALRI cases
+    mv_alri_deaths_flu_a_h1_8d = presents(
+      hosp_alri & death & flu_a_h1
+    ),
+    # 8e No. of in-hospital deaths in influenza A(H1N1)pdm09 positive ALRI cases
+    mv_alri_deaths_flu_a_h1_pdm_8e = presents(
+      hosp_alri & death & flu_a_h1_09pdm
+    ),
+    # 8f No. of in-hospital deaths in influenza A(H3N2) positive ALRI cases
+    mv_alri_deaths_flu_a_h3_8f = presents(
+      hosp_alri & death & flu_a_h3
+    ),
+    # 8g No. of in-hospital deaths in influenza B positive ALRI cases
+    mv_alri_deaths_flu_b_8g = presents(
+      hosp_alri & death & flu_b
+    ),
+    # 8h No. of in-hospital deaths in all influenza positive ALRI cases
+    # (subtyped and unsubtyped)
+    mv_alri_deaths_flu_any_8h = presents(
+      hosp_alri & death & flu_any
+    ),
+    # 9 No. of in-hospital deaths in flu positive ALRI cases with co-morbidities
+    # (congenital heart disease, renal disease, cancer, on immunosuppresants,
+    # chronic lung disease etc.)
+    mv_alri_deaths_flu_comorb_9 = presents(
+      hosp_alri & death & flu_any & comorbidities
+    ),
+    # 10 Number of in-hospital deaths in Flu positive ALRI cases with hypoxemia
+    # (SpO2<90% for 1-59 months and 88% for neonates at altitude <= 2500 m; and
+    # <87% and 85% for post-neonatal age groups and neonates at altitude above
+    # 2500 m)
+    mv_alri_deaths_flu_hypoxemia_10 = presents(
+      hosp_alri & death & flu_any & hypoxemia
+    ),
+    # 11 Hospital deaths in Flu positive ALRI cases requiring admission into
+    # Intensive Care Units
+    mv_alri_deaths_flu_icu_11 = presents(
+      hosp_alri & death & flu_any & presents(icu_days > 0)
+    ),
+    # 12 Hospital deaths in Flu positive ALRI cases requiring mechanical
+    # ventilation
+    mv_alri_deaths_flu_ventilation_12 = presents(
+      hosp_alri & death & flu_any & presents(ventilation)
+    ),
+    # Label year month
+    ym = paste(year, stringr::str_pad(month, width = 2, side = "left", pad = "0"))
+  ) %>%
+  select(
+    site_name, ym, age_group, starts_with("mv_")
+  )
+
+
+# Mortality variables
+mvs <- c(
+  "mv_hosp_alri_1",
+  "mv_hosp_alri_tested_2",
+  "mv_hosp_alri_flu_a_h1_3a",
+  "mv_hosp_alri_flu_a_h1_pdm_3b",
+  "mv_hosp_alri_flu_a_h3_3c",
+  "mv_hosp_alri_flu_b_3d",
+  "mv_hosp_alri_flu_any_3e",
+  "mv_alri_flu_oxymetry_4a",
+  "mv_alri_flu_hypoxemia_4b",
+  "mv_alri_flu_icu_5",
+  "mv_alri_flu_ventilation_6",
+  "mv_alri_flu_comorb_7",
+  "mv_alri_deaths_8a",
+  "mv_alri_tested_deaths_8b",
+  "mv_alri_nontested_deaths_8c",
+  "mv_alri_deaths_flu_a_h1_8d",
+  "mv_alri_deaths_flu_a_h1_pdm_8e",
+  "mv_alri_deaths_flu_a_h3_8f",
+  "mv_alri_deaths_flu_b_8g",
+  "mv_alri_deaths_flu_any_8h",
+  "mv_alri_deaths_flu_comorb_9",
+  "mv_alri_deaths_flu_hypoxemia_10",
+  "mv_alri_deaths_flu_icu_11",
+  "mv_alri_deaths_flu_ventilation_12"
+)
+
+
+# Spread and write
+mortality %>%
+  gather(key = characteristic, value = value, starts_with("mv_")) %>%
+  mutate(
+    characteristic = factor(characteristic, levels = mvs, ordered = TRUE)
+  ) %>%
+  count(site_name, characteristic, age_group, ym, wt = value) %>%
+  spread(key = ym, value = n, fill = 0) %>%
+  arrange(site_name, characteristic, age_group) %>%
+  write_csv(
+    path = "output/mortality.csv"
+  )
 ```
 
