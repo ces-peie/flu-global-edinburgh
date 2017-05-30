@@ -371,11 +371,11 @@ alri_minimal <- alri_cases %>%
   mutate(
     reason_label = recode_factor(
       reason,
-      nt_no_reason = "no reason",
-      nt_no_sample = "no sample",
+      nt_refused_screening = "refused screening",
       nt_not_eligible = "not eligible",
       nt_refused_enrollment = "refused enrollment",
-      nt_refused_screening = "refused screening",
+      nt_no_sample = "no sample",
+      nt_no_reason = "no reason",
       nt_tested = "tested",
       .default = "error",
       .ordered = TRUE
