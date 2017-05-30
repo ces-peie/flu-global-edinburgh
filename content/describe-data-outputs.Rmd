@@ -184,6 +184,9 @@ alri_cases <- study_respi %>%
     select(all_sites, site_name, altitude)
   ) %>%
   mutate(
+    # Case dates
+    year = year(case_date),
+    month = month(case_date),
     # Use department as site name
     site_name = recode_factor(
       site_name,
