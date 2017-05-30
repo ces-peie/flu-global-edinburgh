@@ -39,6 +39,7 @@ if(!file.exists(snapshot_file)){
     "SiteName", "SiteType", "SiteDepartamento",
     "NombreDepartamento", "NombreMunicipio", "catchment",
     "actualAdmitido", "elegibleRespira", "pacienteInscritoVico",
+    "consentimientoVerbal", "consentimientoEscrito",
     # Patient information
     "edadAnios", "edadMeses", "edadDias", "fechaDeNacimiento",
     # Case definition -- physician diagnoses
@@ -93,6 +94,7 @@ if(!file.exists(snapshot_file)){
     "egresoTipo", "egresoCondicion",
     "seguimientoFechaReporte", "seguimientoPacienteCondicion",
     # Lab information
+    "muestraFroteOPColecta", "muestraFroteNP",
     "viralPCR_Hizo", "viralPCR_FluA", "viralPCR_FluB",
     "viralPCR_FluAH1", "viralPCR_FluAH3",
     "viralPCR_FluAH5a", "viralPCR_FluAH5b",
@@ -209,6 +211,9 @@ all_respi <- all_respi %>%
     eligible = elegibleRespira, enrolled = pacienteInscritoVico,
     age_years = edadAnios, age_months = edadMeses, age_days = edadDias,
     birth_date = fechaDeNacimiento,
+    # Consent
+    consent_verbal = consentimientoVerbal,
+    consent_written = consentimientoEscrito,
     # Symptoms
     has_respiratory_indications = presentaIndicacionRespira,
     respiratory_indications = indicacionRespira,
@@ -265,6 +270,8 @@ all_respi <- all_respi %>%
     diag_2 = egresoDiagnostico2,
     diag_2_other = egresoDiagnostico2_esp,
     # Lab results
+    swab_op = muestraFroteOPColecta,
+    swab_np = muestraFroteNP,
     pcr = viralPCR_Hizo,
     flu_a = viralPCR_FluA,
     flu_a_h1 = viralPCR_FluAH1,
