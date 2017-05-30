@@ -184,6 +184,13 @@ alri_cases <- study_respi %>%
     select(all_sites, site_name, altitude)
   ) %>%
   mutate(
+    # Use department as site name
+    site_name = recode_factor(
+      site_name,
+      "H-Cuilapa" = "Santa Rosa",
+      "H-Xela" = "Quetzaltenango",
+      .ordered = TRUE
+    ),
     # Use oxygen saturation without oxygen supplementation if available
     blood_oxigen_sat = if_else(
       condition = !is.na(blood_oxigen_no_supp) &
