@@ -530,3 +530,130 @@ alri_summarized %>%
   write_csv(path = "output/hosp_alri.csv")
 ```
 
+
+
+```{r mortality-sheet}
+#------------------------------------------------------------------------------*
+# Gather mortality information from surveillance data
+#------------------------------------------------------------------------------*
+mortality <- alri_cases %>%
+  # Define characteristics (aka mortality variables, mv for short)
+  mutate(
+    # 1 Total hospitalised ALRI cases
+    mv_hosp_alri_1 = presents(
+      
+    ),
+    # 2 Total cases of hospitalised ALRI tested for influenza
+    mv_hosp_alri_tested_2 = presents(
+      
+    ),
+    # 3a Total cases of hospitalised ALRI positive for Influenza A(H1N1)
+    mv_hosp_alri_flu_a_h1_3a = presents(
+      
+    ),
+    # 3b Total cases of hospitalised ALRI positive for Influenza A(H1N1)09pdm
+    mv_hosp_alri_flu_a_h1_pdm_3b = presents(
+      
+    ),
+    # 3c Total cases of hospitalised ALRI positive for Influenza A(H3N2)
+    mv_hosp_alri_flu_a_h3_3c = presents(
+      
+    ),
+    # 3d Total cases of hospitalised ALRI positive for Influenza B
+    mv_hosp_alri_flu_b_3d = presents(
+      
+    ),
+    # 3e Total cases of hospitalised ALRI positive for all Influenza (including
+    # subtyped and unsubtyped)
+    mv_hosp_alri_flu_any_3e = presents(
+      
+    ),
+    # 4a Number of influenza positive ALRI cases where SpO2 was recorded
+    mv_alri_flu_oxymetry_4a = presents(
+      
+    ),
+    # 4b Number of influenza positive ALRI cases with hypoxemia (SpO2<90% for
+    # 1-59 months and 88% for neonates at altitude<=2500 m; and <87% and 85%
+    # for post-neonatal age groups and neonates at altitude above 2500 m)
+    mv_alri_flu_hypoxemia_4b = presents(
+      
+    ),
+    # 5 Number of influenza positive ALRI cases requiring admission into
+    # Intensive Care Units
+    mv_alri_flu_icu_5 = presents(
+      
+    ),
+    # 6 Number of influenza positive ALRI cases requiring mechanical ventilation
+    mv_alri_flu_ventilation_6 = presents(
+      
+    ),
+    # 7 No. of influenza positive ALRI cases with co-morbidities (congenital
+    # heart disease, renal disease, cancer, on immunosuppresants, chronic lung
+    # disease etc.)
+    mv_alri_flu_comorb_7 = presents(
+      
+    ),
+    # 8a Number of ALRI deaths in hospital
+    mv_alri_deaths_8a = presents(
+      
+    ),
+    # 8b Number of ALRI cases tested for Flu and who died in-hospital 
+    mv_alri_tested_deaths_8b = presents(
+      
+    ),
+    # 8c Number of ALRI cases NOT tested for Flu and who died in-hospital 
+    mv_alri_nontested_deaths_8c = presents(
+      
+    ),
+    # 8d No. of in-hospital deaths in influenza A(H1N1) positive ALRI cases
+    mv_alri_deaths_flu_a_h1_8d = presents(
+      
+    ),
+    # 8e No. of in-hospital deaths in influenza A(H1N1)pdm09 positive ALRI cases
+    mv_alri_deaths_flu_a_h1_pdm_8e = presents(
+      
+    ),
+    # 8f No. of in-hospital deaths in influenza A(H3N2) positive ALRI cases
+    mv_alri_deaths_flu_a_h3_8f = presents(
+      
+    ),
+    # 8g No. of in-hospital deaths in influenza B positive ALRI cases
+    mv_alri_deaths_flu_b_8g = presents(
+      
+    ),
+    # 8h No. of in-hospital deaths in all influenza positive ALRI cases
+    # (subtyped and unsubtyped)
+    mv_alri_deaths_flu_any_8h = presents(
+      
+    ),
+    # 9 No. of in-hospital deaths in flu positive ALRI cases with co-morbidities
+    # (congenital heart disease, renal disease, cancer, on immunosuppresants,
+    # chronic lung disease etc.)
+    mv_alri_deaths_flu_comorb_9 = presents(
+      
+    ),
+    # 10 Number of in-hospital deaths in Flu positive ALRI cases with hypoxemia
+    # (SpO2<90% for 1-59 months and 88% for neonates at altitude <= 2500 m; and
+    # <87% and 85% for post-neonatal age groups and neonates at altitude above
+    # 2500 m)
+    mv_alri_deaths_flu_hypoxemia_10 = presents(
+      
+    ),
+    # 11 Hospital deaths in Flu positive ALRI cases requiring admission into
+    # Intensive Care Units
+    mv_alri_deaths_flu_icu_11 = presents(
+      
+    ),
+    # 12 Hospital deaths in Flu positive ALRI cases requiring mechanical
+    # ventilation
+    mv_alri_deaths_flu_ventilation_12 = presents(
+      
+    )
+  ) %>%
+  select(
+    site_name, year, month, age_group
+  )
+
+
+```
+
